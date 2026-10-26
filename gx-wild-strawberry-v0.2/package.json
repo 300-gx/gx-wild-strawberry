@@ -1,0 +1,9 @@
+{
+  "name": "gx-wild-strawberry",
+  "version": "0.2.0",
+  "private": true,
+  "description": "GX：野草莓之地——独立同人创作档案",
+  "scripts": {
+    "check:content": "node scripts/validate-content.mjs"
+  }
+}
