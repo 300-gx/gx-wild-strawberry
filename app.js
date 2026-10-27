@@ -12,7 +12,99 @@ function applyFilters(){const query=$('#searchInput').value.trim().toLowerCase()
 function setLiked(i){const button=$(`[data-like="${i}"]`);if(liked.has(i)){liked.delete(i);works[i].likes--;button.classList.remove('liked');button.innerHTML=`♡ <span>${works[i].likes}</span>`;notify('已取消喜欢')}else{liked.add(i);works[i].likes++;button.classList.add('liked');button.innerHTML=`♥ <span>${works[i].likes}</span>`;notify('已加入喜欢')}if(currentWork===i)updateModalLike()}
 function updateModalLike(){const b=$('#modalLike');if(liked.has(currentWork)){b.innerHTML='♥ 已喜欢';}else{b.innerHTML='♡ 喜欢这件作品';}}
 let currentImageIndex = 0;
+function openImageViewer() {
+  const w = works[currentWork];
+  if (w.kind !== '图像') return;
 
+  const total = w.images?.length || (currentWork === 0 ? 3 : 5);
+  let viewerIndex = currentImageIndex;
+
+  const viewer = document.createElement('div');
+  viewer.className = 'image-viewer';
+  viewer.setAttribute('role', 'dialog');
+  viewer.setAttribute('aria-modal', 'true');
+  viewer.setAttribute('aria-label', `${w.title}，图片浏览`);
+
+  const close = document.createElement('button');
+  close.className = 'image-viewer-close';
+  close.type = 'button';
+  close.textContent = '×';
+  close.setAttribute('aria-label', '退出全屏');
+
+  const heading = document.createElement('div');
+  heading.className = 'image-viewer-heading';
+  heading.textContent = `${w.title} · ${w.author}`;
+
+  const stage = document.createElement('div');
+  stage.className = 'image-viewer-stage';
+  stage.setAttribute('aria-label', '作品图片展示区域');
+
+  const art = document.createElement('div');
+  art.className = `modal-art modal-art-${currentWork}`;
+
+  const controls = document.createElement('div');
+  controls.className = 'image-viewer-controls';
+
+  const prev = document.createElement('button');
+  prev.type = 'button';
+  prev.className = 'image-viewer-prev';
+  prev.textContent = '← 上一张';
+
+  const count = document.createElement('span');
+  count.className = 'image-viewer-count';
+
+  const next = document.createElement('button');
+  next.type = 'button';
+  next.className = 'image-viewer-next';
+  next.textContent = '下一张 →';
+
+  function render() {
+    count.textContent = `${viewerIndex + 1} / ${total}`;
+    art.className = `modal-art modal-art-${currentWork} gallery-slide-${viewerIndex}`;
+  }
+
+  function closeViewer() {
+    viewer.remove();
+    document.removeEventListener('keydown', onKeyDown);
+  }
+
+  function onKeyDown(event) {
+    if (event.key === 'Escape') closeViewer();
+    if (event.key === 'ArrowLeft') {
+      viewerIndex = (viewerIndex - 1 + total) % total;
+      render();
+    }
+    if (event.key === 'ArrowRight') {
+      viewerIndex = (viewerIndex + 1) % total;
+      render();
+    }
+  }
+
+  prev.addEventListener('click', () => {
+    viewerIndex = (viewerIndex - 1 + total) % total;
+    render();
+  });
+
+  next.addEventListener('click', () => {
+    viewerIndex = (viewerIndex + 1) % total;
+    render();
+  });
+
+  close.addEventListener('click', closeViewer);
+
+  stage.addEventListener('click', () => {
+    viewerIndex = (viewerIndex + 1) % total;
+    render();
+  });
+
+  stage.appendChild(art);
+  controls.append(prev, count, next);
+  viewer.append(heading, close, stage, controls);
+  document.body.appendChild(viewer);
+
+  render();
+  document.addEventListener('keydown', onKeyDown);
+}
 function renderImageGallery() {
   const w = works[currentWork];
   const art = $('#modalArt');
@@ -51,6 +143,22 @@ function renderImageGallery() {
   });
 
   art.append(prev, next, count);
+art.style.cursor = 'zoom-in';
+  art.setAttribute('role', 'button');
+  art.setAttribute('tabindex', '0');
+  art.setAttribute('aria-label', '点击全屏查看作品图片');
+
+  art.addEventListener('click', event => {
+    if (event.target.closest('button')) return;
+    openImageViewer();
+  });
+
+  art.addEventListener('keydown', event => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      openImageViewer();
+    }
+  });
 }
 function openWork(i) {
   currentWork = i;
