@@ -11,7 +11,90 @@ function notify(message){const el=$('#toast');el.textContent=message;el.classLis
 function applyFilters(){const query=$('#searchInput').value.trim().toLowerCase();let shown=0;$$('.work-card').forEach((card,i)=>{const w=works[i];const filterMatch=activeFilter==='全部'||w.kind===activeFilter||w.tags.includes(activeFilter);const haystack=[w.title,w.author,...w.tags,w.kind].join(' ').toLowerCase();const queryMatch=!query||haystack.includes(query);card.hidden=!(filterMatch&&queryMatch);if(!card.hidden)shown++});$('#shownCount').textContent=String(shown).padStart(2,'0');$('#emptyState').hidden=shown!==0}
 function setLiked(i){const button=$(`[data-like="${i}"]`);if(liked.has(i)){liked.delete(i);works[i].likes--;button.classList.remove('liked');button.innerHTML=`♡ <span>${works[i].likes}</span>`;notify('已取消喜欢')}else{liked.add(i);works[i].likes++;button.classList.add('liked');button.innerHTML=`♥ <span>${works[i].likes}</span>`;notify('已加入喜欢')}if(currentWork===i)updateModalLike()}
 function updateModalLike(){const b=$('#modalLike');if(liked.has(currentWork)){b.innerHTML='♥ 已喜欢';}else{b.innerHTML='♡ 喜欢这件作品';}}
-function openWork(i){currentWork=i;const w=works[i];$('#modalTitle').textContent=w.title;$('#modalAuthor').textContent=`${w.author} · ${w.date} · ${w.kind}`;$('#modalType').textContent=w.kind==='图像'?'ILLUSTRATION / IMAGE SET':'FICTION / TEXT WORK';$('#modalTags').innerHTML=w.tags.map(t=>`<span>#${t}</span>`).join('');$('#modalDescription').textContent=w.description;$('#modalArt').className=`modal-art modal-art-${i}`;$('#modalBookmark').textContent=bookmarked.has(i)?'✓ 已收藏':'＋ 收藏 / 书签';updateModalLike();$('#workModal').hidden=false;document.body.style.overflow='hidden'}
+function openWork(i) {
+  currentWork = i;
+  const w = works[i];
+
+  $('#modalTitle').textContent = w.title;
+  $('#modalAuthor').textContent = `${w.author} · ${w.date} · ${w.kind}`;
+  $('#modalType').textContent = w.kind === '图像'
+    ? 'ILLUSTRATION / IMAGE SET'
+    : 'FICTION / TEXT WORK';
+  $('#modalTags').innerHTML = w.tags.map(t => `<span>#${t}</span>`).join('');
+  $('#modalDescription').textContent = w.description;
+  $('#modalArt').className = `modal-art modal-art-${i}`;
+  $('#modalBookmark').textContent = bookmarked.has(i) ? '✓ 已收藏' : '＋ 收藏 / 书签';
+
+  let readButton = $('#readWorkButton');
+
+  if (w.kind === '文字') {
+    if (!readButton) {
+      readButton = document.createElement('button');
+      readButton.id = 'readWorkButton';
+      readButton.className = 'primary-link';
+      readButton.type = 'button';
+      readButton.textContent = '阅读全文 →';
+      $('#modalDescription').after(readButton);
+      readButton.addEventListener('click', openReader);
+    }
+    readButton.hidden = false;
+  } else if (readButton) {
+    readButton.hidden = true;
+  }
+
+  updateModalLike();
+  $('#workModal').hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+
+let previousCoolMode = false;
+
+function openReader() {
+  const w = works[currentWork];
+
+  if (w.kind !== '文字') return;
+
+  previousCoolMode = document.body.classList.contains('cool-mode');
+
+  $('#readerTitle').textContent = w.title;
+  $('#readerAuthor').textContent = `${w.author} · ${w.date}`;
+  $('#readerType').textContent = 'FICTION / TEXT WORK';
+
+  const content = $('#readerContent');
+  content.replaceChildren();
+
+  if (w.content) {
+    w.content.split(/\n\s*\n/).forEach(paragraph => {
+      const p = document.createElement('p');
+      p.textContent = paragraph;
+      content.appendChild(p);
+    });
+  } else {
+    const p = document.createElement('p');
+    p.textContent = '正文尚未录入。';
+    content.appendChild(p);
+  }
+
+  $('#workModal').hidden = true;
+  $('#readerModal').hidden = false;
+  document.body.classList.add('cool-mode');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeReader() {
+  $('#readerModal').hidden = true;
+  if (!previousCoolMode) {
+    document.body.classList.remove('cool-mode');
+  }
+  document.body.style.overflow = '';
+}
+
+$('#readerBack').addEventListener('click', closeReader);
+$('#readerClose').addEventListener('click', closeReader);
+
+$('#readerModal').addEventListener('click', event => {
+  if (event.target === $('#readerModal')) closeReader();
+});
 function closeModal(id){$('#'+id).hidden=true;if($$('.modal-backdrop:not([hidden])').length===0)document.body.style.overflow=''}
 $('#filters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(!b)return;activeFilter=b.dataset.filter;$$('.filter-chip').forEach(c=>c.classList.toggle('selected',c===b));applyFilters()});$('#searchInput').addEventListener('input',applyFilters);
 $$('[data-open]').forEach(b=>b.addEventListener('click',()=>openWork(Number(b.dataset.open))));$$('[data-like]').forEach(b=>b.addEventListener('click',()=>setLiked(Number(b.dataset.like))));
