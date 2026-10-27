@@ -173,3 +173,54 @@
 #modalLike {
   margin-top: 0;
 }
+/* 图像作品集轮播控件 */
+#modalArt {
+  position: relative;
+  overflow: hidden;
+}
+
+#modalArt .gallery-prev,
+#modalArt .gallery-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 42px;
+  height: 42px;
+  border: 1px solid #ffffff80;
+  border-radius: 50%;
+  background: #26362fcc;
+  color: #fff;
+  font-size: 30px;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+#modalArt .gallery-prev {
+  left: 14px;
+}
+
+#modalArt .gallery-next {
+  right: 14px;
+}
+
+#modalArt .gallery-prev:hover,
+#modalArt .gallery-next:hover {
+  background: #26362f;
+}
+
+#modalArt .gallery-count {
+  position: absolute;
+  z-index: 2;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: #26362fcc;
+  color: #fff;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
