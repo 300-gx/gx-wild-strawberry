@@ -24,3 +24,59 @@ $('#modalLike').addEventListener('click',()=>setLiked(currentWork));$('#modalBoo
 function openSubscribe(){ $('#subscribeModal').hidden=false;document.body.style.overflow='hidden'}$('#subscribeOpen').addEventListener('click',openSubscribe);$('#subscribeOpen2').addEventListener('click',openSubscribe);$('#subscribeForm').addEventListener('submit',e=>{e.preventDefault();$('#subscribeMessage').textContent='原型演示：未连接邮件服务，邮箱没有被提交或保存。';notify('邮件订阅将在后续开发阶段接入')});
 const now=new Date();$('#screenDate').textContent='FRAME '+String(Math.floor((now.getMonth()*31+now.getDate())%365+1).padStart(3,'0'));
 // The static demo intentionally does not persist likes, bookmarks, or email addresses.
+const frameWidget = $('#screenshotWidget');
+
+frameWidget.setAttribute('role', 'button');
+frameWidget.setAttribute('tabindex', '0');
+frameWidget.setAttribute('aria-label', '放大查看今日的一帧');
+
+function openFrameModal() {
+  if ($('#frameModal')) return;
+
+  const modal = document.createElement('div');
+  modal.id = 'frameModal';
+  modal.className = 'frame-modal';
+
+  const panel = document.createElement('div');
+  panel.className = 'frame-modal-panel';
+
+  const close = document.createElement('button');
+  close.className = 'frame-modal-close';
+  close.type = 'button';
+  close.textContent = '×';
+  close.setAttribute('aria-label', '关闭放大画面');
+
+  const art = $('#screenshotWidget .screen-art').cloneNode(true);
+  art.classList.add('frame-large');
+
+  const caption = document.createElement('p');
+  caption.className = 'frame-modal-caption';
+  caption.textContent = 'GX · MEMORY FRAME';
+
+  panel.append(close, art, caption);
+  modal.append(panel);
+  document.body.append(modal);
+
+  function closeFrame() {
+    modal.remove();
+    document.removeEventListener('keydown', onKeyDown);
+  }
+
+  function onKeyDown(event) {
+    if (event.key === 'Escape') closeFrame();
+  }
+
+  close.addEventListener('click', closeFrame);
+  modal.addEventListener('click', event => {
+    if (event.target === modal) closeFrame();
+  });
+  document.addEventListener('keydown', onKeyDown);
+}
+
+frameWidget.addEventListener('click', openFrameModal);
+frameWidget.addEventListener('keydown', event => {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    openFrameModal();
+  }
+});
