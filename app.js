@@ -11,6 +11,47 @@ function notify(message){const el=$('#toast');el.textContent=message;el.classLis
 function applyFilters(){const query=$('#searchInput').value.trim().toLowerCase();let shown=0;$$('.work-card').forEach((card,i)=>{const w=works[i];const filterMatch=activeFilter==='全部'||w.kind===activeFilter||w.tags.includes(activeFilter);const haystack=[w.title,w.author,...w.tags,w.kind].join(' ').toLowerCase();const queryMatch=!query||haystack.includes(query);card.hidden=!(filterMatch&&queryMatch);if(!card.hidden)shown++});$('#shownCount').textContent=String(shown).padStart(2,'0');$('#emptyState').hidden=shown!==0}
 function setLiked(i){const button=$(`[data-like="${i}"]`);if(liked.has(i)){liked.delete(i);works[i].likes--;button.classList.remove('liked');button.innerHTML=`♡ <span>${works[i].likes}</span>`;notify('已取消喜欢')}else{liked.add(i);works[i].likes++;button.classList.add('liked');button.innerHTML=`♥ <span>${works[i].likes}</span>`;notify('已加入喜欢')}if(currentWork===i)updateModalLike()}
 function updateModalLike(){const b=$('#modalLike');if(liked.has(currentWork)){b.innerHTML='♥ 已喜欢';}else{b.innerHTML='♡ 喜欢这件作品';}}
+let currentImageIndex = 0;
+
+function renderImageGallery() {
+  const w = works[currentWork];
+  const art = $('#modalArt');
+
+  if (w.kind !== '图像') return;
+
+  const total = w.images?.length || (currentWork === 0 ? 3 : 5);
+
+  art.replaceChildren();
+  art.className = `modal-art modal-art-${currentWork} gallery-slide-${currentImageIndex}`;
+
+  const prev = document.createElement('button');
+  prev.type = 'button';
+  prev.className = 'gallery-prev';
+  prev.textContent = '‹';
+  prev.setAttribute('aria-label', '上一张图片');
+
+  const next = document.createElement('button');
+  next.type = 'button';
+  next.className = 'gallery-next';
+  next.textContent = '›';
+  next.setAttribute('aria-label', '下一张图片');
+
+  const count = document.createElement('span');
+  count.className = 'gallery-count';
+  count.textContent = `${currentImageIndex + 1} / ${total}`;
+
+  prev.addEventListener('click', () => {
+    currentImageIndex = (currentImageIndex - 1 + total) % total;
+    renderImageGallery();
+  });
+
+  next.addEventListener('click', () => {
+    currentImageIndex = (currentImageIndex + 1) % total;
+    renderImageGallery();
+  });
+
+  art.append(prev, next, count);
+}
 function openWork(i) {
   currentWork = i;
   const w = works[i];
@@ -22,7 +63,13 @@ function openWork(i) {
     : 'FICTION / TEXT WORK';
   $('#modalTags').innerHTML = w.tags.map(t => `<span>#${t}</span>`).join('');
   $('#modalDescription').textContent = w.description;
+if (w.kind === '图像') {
+  currentImageIndex = 0;
+  renderImageGallery();
+} else {
+  $('#modalArt').replaceChildren();
   $('#modalArt').className = `modal-art modal-art-${i}`;
+}
   $('#modalBookmark').textContent = bookmarked.has(i) ? '✓ 已收藏' : '＋ 收藏 / 书签';
 
   let readButton = $('#readWorkButton');
