@@ -164,5 +164,12 @@
   }
 }
 #readWorkButton {
-  margin-bottom: 24px;
+  display: flex !important;
+  width: fit-content;
+  margin-top: 12px !important;
+  margin-bottom: 28px !important;
+}
+
+#modalLike {
+  margin-top: 0;
 }
