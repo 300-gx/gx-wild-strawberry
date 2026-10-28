@@ -257,16 +257,22 @@
 
 .image-viewer-close {
   position: absolute;
-  top: 18px;
-  right: 22px;
-  width: 42px;
-  height: 42px;
-  border: 1px solid #ffffff40;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid #ffffff60;
   border-radius: 50%;
-  background: transparent;
+  background: #26362fcc;
   color: #fff;
-  font-size: 30px;
+  font-size: 34px;
+  line-height: 1;
   cursor: pointer;
+  touch-action: manipulation;
 }
 
 .image-viewer-stage {
@@ -317,6 +323,7 @@
   font-variant-numeric: tabular-nums;
 }
 
+
 @media (max-width: 620px) {
   .image-viewer {
     gap: 12px;
@@ -329,5 +336,30 @@
 
   .image-viewer-controls button {
     padding: 9px 12px;
+  }
+
+  /* 手机端：提示作品图片可以放大 */
+  .work-modal #modalArt::after {
+    content: '点击图片可放大查看 ↗';
+    left: 50%;
+    bottom: 14px;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: calc(100% - 24px);
+    padding: 8px 12px;
+    border-radius: 20px;
+    background: #26362fcc;
+    color: #fff;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-align: center;
+  }
+
+  /* 手机端：关闭按钮更容易点中 */
+  .image-viewer-close {
+    top: max(12px, env(safe-area-inset-top));
+    right: 12px;
+    width: 56px;
+    height: 56px;
   }
 }
