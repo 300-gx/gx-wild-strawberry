@@ -496,3 +496,16 @@
     flex: 0 0 64px;
   }
 }
+
+/* GX一幀：电脑端作品展示区的边框收口 */
+@media (min-width: 621px) {
+  .work-modal.image-work #modalArt {
+    border: 1px solid #d1d8d1;
+    border-bottom: 2px solid #aab9ad;
+  }
+
+  .work-modal.image-work #modalArt.has-real-image {
+    border-color: #d1d8d1;
+    border-bottom-color: #aab9ad;
+  }
+}
