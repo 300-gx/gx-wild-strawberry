@@ -462,3 +462,37 @@
     -webkit-backdrop-filter: blur(12px) saturate(120%);
   }
 }
+
+/* 桌面端：让左侧作品展示区域填满详情弹窗高度 */
+@media (min-width: 621px) {
+  .work-modal {
+    align-items: stretch;
+  }
+
+  .work-modal .modal-art-wrap {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    background: var(--paper);
+  }
+
+  .work-modal .modal-art-wrap:has(.gallery-controls[hidden]) {
+    display: flex;
+  }
+
+  .work-modal .modal-art-wrap #modalArt {
+    flex: 1 1 auto;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+  }
+
+  .work-modal .modal-art-wrap #modalArt.has-real-image {
+    height: auto;
+  }
+
+  .work-modal .modal-art-wrap .gallery-controls:not([hidden]) {
+    flex: 0 0 64px;
+  }
+}
