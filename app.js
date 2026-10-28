@@ -164,7 +164,8 @@ art.style.cursor = 'zoom-in';
 function openWork(i) {
   currentWork = i;
   const w = works[i];
-
+  const modalPanel = $('#workModal .work-modal');
+  modalPanel.classList.toggle('image-work', w.kind === '图像');
   $('#modalTitle').textContent = w.title;
   $('#modalAuthor').textContent = `${w.author} · ${w.date} · ${w.kind}`;
   $('#modalType').textContent = w.kind === '图像'
