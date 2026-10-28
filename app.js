@@ -108,12 +108,13 @@ function openImageViewer() {
 function renderImageGallery() {
   const w = works[currentWork];
   const art = $('#modalArt');
-
+  const controls = $('#galleryControls');
   if (w.kind !== '图像') return;
 
   const total = w.images?.length || (currentWork === 0 ? 3 : 5);
 
   art.replaceChildren();
+  controls.replaceChildren();
   art.className = `modal-art modal-art-${currentWork} gallery-slide-${currentImageIndex}`;
 
   const prev = document.createElement('button');
@@ -142,7 +143,7 @@ function renderImageGallery() {
     renderImageGallery();
   });
 
-  art.append(prev, next, count);
+  controls.append(prev, next, count);
 art.style.cursor = 'zoom-in';
   art.setAttribute('role', 'button');
   art.setAttribute('tabindex', '0');
@@ -176,6 +177,7 @@ if (w.kind === '图像') {
   renderImageGallery();
 } else {
   $('#modalArt').replaceChildren();
+  $('#galleryControls').replaceChildren();
   $('#modalArt').className = `modal-art modal-art-${i}`;
 }
   $('#modalBookmark').textContent = bookmarked.has(i) ? '✓ 已收藏' : '＋ 收藏 / 书签';
