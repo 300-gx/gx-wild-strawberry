@@ -342,21 +342,24 @@
   }
 
   /* 手机端：提示作品图片可以放大 */
-  .work-modal.image-work #modalArt::after
-    content: '点击图片可放大查看 ↗';
-    left: 50%;
-    bottom: 14px;
-    transform: translateX(-50%);
-    width: max-content;
-    max-width: calc(100% - 24px);
-    padding: 8px 12px;
-    border-radius: 20px;
-    background: #26362fcc;
-    color: #fff;
-    font-size: 11px;
-    letter-spacing: 0.04em;
-    text-align: center;
-  }
+.work-modal.image-work #modalArt::after {
+  content: '点击图片可放大查看 ↗';
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 24px);
+  padding: 8px 12px;
+  border-radius: 20px;
+  background: #26362fcc;
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-align: center;
+  z-index: 5;
+  pointer-events: none;
+}
 
   /* 手机端：关闭按钮更容易点中 */
   .image-viewer-close {
@@ -366,6 +369,11 @@
     height: 68px;
   }
 }
+/* 文字作品不显示空白轮播栏 */
 .gallery-controls[hidden] {
-  display: none;
+  display: none !important;
+}
+
+.modal-art-wrap:has(.gallery-controls[hidden]) {
+  display: block;
 }
