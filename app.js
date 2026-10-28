@@ -30,13 +30,19 @@ function renderArtImage(art, workIndex, imageIndex) {
     backdrop.alt = '';
     backdrop.setAttribute('aria-hidden', 'true');
 
+    
+    const mainWrap = document.createElement('div');
+    mainWrap.className = 'art-image-main-wrap';
+
     const mainImage = document.createElement('img');
     mainImage.className = 'art-image-main';
     mainImage.src = imageUrl;
     mainImage.alt = `${w.title}，第 ${imageIndex + 1} 张`;
     mainImage.draggable = false;
 
-    art.append(backdrop, mainImage);
+    mainWrap.appendChild(mainImage);
+    art.append(backdrop, mainWrap);
+
   }
 }
 
