@@ -377,3 +377,88 @@
 .modal-art-wrap:has(.gallery-controls[hidden]) {
   display: block;
 }
+
+/* ===== 自适应图片与液态玻璃背景 ===== */
+
+/* 真实图片作品的展示区域 */
+.modal-art.has-real-image {
+  min-width: 0;
+  min-height: 0;
+  height: min(68vh, 680px);
+  background: #18211f;
+  isolation: isolate;
+  overflow: hidden;
+  position: relative;
+}
+
+/* 延展图片背景：放大、模糊 */
+.modal-art.has-real-image .art-image-backdrop {
+  position: absolute;
+  inset: -8%;
+  width: 116%;
+  height: 116%;
+  object-fit: cover;
+  filter: blur(28px) saturate(75%);
+  opacity: 0.7;
+  transform: scale(1.04);
+  pointer-events: none;
+}
+
+/* 半透明磨砂玻璃层 */
+.modal-art.has-real-image::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff24,
+      #ffffff08 40%,
+      #111c1a24
+    );
+  border: 1px solid #ffffff20;
+  box-shadow:
+    inset 0 1px 1px #ffffff30,
+    inset 0 -1px 2px #ffffff12;
+  backdrop-filter: blur(18px) saturate(125%);
+  -webkit-backdrop-filter: blur(18px) saturate(125%);
+  pointer-events: none;
+}
+
+/* 主体图片：完整显示，不裁切、不拉伸 */
+.modal-art.has-real-image .art-image-main {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  pointer-events: none;
+}
+
+/* 全屏查看时，尽量利用屏幕空间 */
+.image-viewer .modal-art.has-real-image {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  max-height: 100%;
+}
+
+/* 手机端适当减弱模糊，降低渲染负担 */
+@media (max-width: 620px) {
+  .modal-art.has-real-image {
+    height: min(52vh, 560px);
+  }
+
+  .modal-art.has-real-image .art-image-backdrop {
+    filter: blur(20px) saturate(75%);
+  }
+
+  .modal-art.has-real-image::before {
+    backdrop-filter: blur(12px) saturate(120%);
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+  }
+}
