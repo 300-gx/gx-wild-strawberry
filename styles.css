@@ -428,18 +428,33 @@
   pointer-events: none;
 }
 
-/* 主体图片：完整显示，不裁切、不拉伸 */
-.modal-art.has-real-image .art-image-main {
+
+/* 主体图片容器：居中定位，不改变图片比例 */
+.modal-art.has-real-image .art-image-main-wrap {
   position: absolute;
   inset: 0;
   z-index: 2;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
   pointer-events: none;
 }
+
+/* 主体图片：完整显示，添加柔和的悬浮投影 */
+.modal-art.has-real-image .art-image-main {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+  filter:
+    drop-shadow(0 8px 14px #0b15122e)
+    drop-shadow(0 2px 5px #0b15121c);
+}
+
 
 /* 全屏查看时，尽量利用屏幕空间 */
 .image-viewer .modal-art.has-real-image {
@@ -462,6 +477,17 @@
   .modal-art.has-real-image::before {
     backdrop-filter: blur(6px) saturate(110%);
     -webkit-backdrop-filter: blur(6px) saturate(110%);
+   
+  .modal-art.has-real-image .art-image-main-wrap {
+    padding: 12px;
+  }
+
+  .modal-art.has-real-image .art-image-main {
+    filter:
+      drop-shadow(0 5px 10px #0b151226)
+      drop-shadow(0 1px 3px #0b151214);
+  }
+
   }
 }
 
