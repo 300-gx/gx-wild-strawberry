@@ -115,6 +115,7 @@ function renderImageGallery() {
 
   art.replaceChildren();
   controls.replaceChildren();
+  controls.hidden = false;
   art.className = `modal-art modal-art-${currentWork} gallery-slide-${currentImageIndex}`;
 
   const prev = document.createElement('button');
@@ -179,6 +180,7 @@ if (w.kind === '图像') {
 } else {
   $('#modalArt').replaceChildren();
   $('#galleryControls').replaceChildren();
+  $('#galleryControls').hidden = true;
   $('#modalArt').className = `modal-art modal-art-${i}`;
 }
   $('#modalBookmark').textContent = bookmarked.has(i) ? '✓ 已收藏' : '＋ 收藏 / 书签';
