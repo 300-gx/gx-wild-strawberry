@@ -518,7 +518,7 @@
 }
 /* GX一幀：放大弹窗外框的底部收边 */
 .frame-modal-panel {
-  border: 1px solid #d1d8d1;
-  border-bottom: 3px solid #aab9ad;
+  border: 5px solid red !important;
+  border-bottom: 10px solid red !important;
   box-sizing: border-box;
 }
