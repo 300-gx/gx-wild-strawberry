@@ -12,6 +12,34 @@ function applyFilters(){const query=$('#searchInput').value.trim().toLowerCase()
 function setLiked(i){const button=$(`[data-like="${i}"]`);if(liked.has(i)){liked.delete(i);works[i].likes--;button.classList.remove('liked');button.innerHTML=`♡ <span>${works[i].likes}</span>`;notify('已取消喜欢')}else{liked.add(i);works[i].likes++;button.classList.add('liked');button.innerHTML=`♥ <span>${works[i].likes}</span>`;notify('已加入喜欢')}if(currentWork===i)updateModalLike()}
 function updateModalLike(){const b=$('#modalLike');if(liked.has(currentWork)){b.innerHTML='♥ 已喜欢';}else{b.innerHTML='♡ 喜欢这件作品';}}
 let currentImageIndex = 0;
+
+// 生成图片展示层：真实图片启用磨砂玻璃背景，模拟图片继续使用原样式
+function renderArtImage(art, workIndex, imageIndex) {
+  const w = works[workIndex];
+  const imageUrl = w.images?.[imageIndex];
+
+  art.replaceChildren();
+  art.className = `modal-art modal-art-${workIndex} gallery-slide-${imageIndex}`;
+
+  if (typeof imageUrl === 'string' && imageUrl.trim()) {
+    art.classList.add('has-real-image');
+
+    const backdrop = document.createElement('img');
+    backdrop.className = 'art-image-backdrop';
+    backdrop.src = imageUrl;
+    backdrop.alt = '';
+    backdrop.setAttribute('aria-hidden', 'true');
+
+    const mainImage = document.createElement('img');
+    mainImage.className = 'art-image-main';
+    mainImage.src = imageUrl;
+    mainImage.alt = `${w.title}，第 ${imageIndex + 1} 张`;
+    mainImage.draggable = false;
+
+    art.append(backdrop, mainImage);
+  }
+}
+
 function openImageViewer() {
   const w = works[currentWork];
   if (w.kind !== '图像') return;
@@ -40,14 +68,12 @@ function openImageViewer() {
   stage.setAttribute('aria-label', '作品图片展示区域');
 
   const art = document.createElement('div');
-  art.className = `modal-art modal-art-${currentWork}`;
 
   const controls = document.createElement('div');
   controls.className = 'image-viewer-controls';
 
   const prev = document.createElement('button');
   prev.type = 'button';
-  prev.className = 'image-viewer-prev';
   prev.textContent = '← 上一张';
 
   const count = document.createElement('span');
@@ -55,12 +81,11 @@ function openImageViewer() {
 
   const next = document.createElement('button');
   next.type = 'button';
-  next.className = 'image-viewer-next';
   next.textContent = '下一张 →';
 
   function render() {
     count.textContent = `${viewerIndex + 1} / ${total}`;
-    art.className = `modal-art modal-art-${currentWork} gallery-slide-${viewerIndex}`;
+    renderArtImage(art, currentWork, viewerIndex);
   }
 
   function closeViewer() {
@@ -105,6 +130,7 @@ function openImageViewer() {
   render();
   document.addEventListener('keydown', onKeyDown);
 }
+
 function renderImageGallery() {
   const w = works[currentWork];
   const art = $('#modalArt');
@@ -113,55 +139,54 @@ function renderImageGallery() {
 
   const total = w.images?.length || (currentWork === 0 ? 3 : 5);
 
-  art.replaceChildren();
+  renderArtImage(art, currentWork, currentImageIndex);
   controls.replaceChildren();
-  controls.hidden = false;
-  art.className = `modal-art modal-art-${currentWork} gallery-slide-${currentImageIndex}`;
+  controls.hidden = total <= 1;
 
-  const prev = document.createElement('button');
-  prev.type = 'button';
-  prev.className = 'gallery-prev';
-  prev.textContent = '‹';
-  prev.setAttribute('aria-label', '上一张图片');
+  if (total > 1) {
+    const prev = document.createElement('button');
+    prev.type = 'button';
+    prev.className = 'gallery-prev';
+    prev.textContent = '‹';
+    prev.setAttribute('aria-label', '上一张图片');
 
-  const next = document.createElement('button');
-  next.type = 'button';
-  next.className = 'gallery-next';
-  next.textContent = '›';
-  next.setAttribute('aria-label', '下一张图片');
+    const next = document.createElement('button');
+    next.type = 'button';
+    next.className = 'gallery-next';
+    next.textContent = '›';
+    next.setAttribute('aria-label', '下一张图片');
 
-  const count = document.createElement('span');
-  count.className = 'gallery-count';
-  count.textContent = `${currentImageIndex + 1} / ${total}`;
+    const count = document.createElement('span');
+    count.className = 'gallery-count';
+    count.textContent = `${currentImageIndex + 1} / ${total}`;
 
-  prev.addEventListener('click', () => {
-    currentImageIndex = (currentImageIndex - 1 + total) % total;
-    renderImageGallery();
-  });
+    prev.addEventListener('click', () => {
+      currentImageIndex = (currentImageIndex - 1 + total) % total;
+      renderImageGallery();
+    });
 
-  next.addEventListener('click', () => {
-    currentImageIndex = (currentImageIndex + 1) % total;
-    renderImageGallery();
-  });
+    next.addEventListener('click', () => {
+      currentImageIndex = (currentImageIndex + 1) % total;
+      renderImageGallery();
+    });
 
-  controls.append(prev, next, count);
-art.style.cursor = 'zoom-in';
+    controls.append(prev, next, count);
+  }
+
+  art.style.cursor = 'zoom-in';
   art.setAttribute('role', 'button');
   art.setAttribute('tabindex', '0');
   art.setAttribute('aria-label', '点击全屏查看作品图片');
 
-  art.addEventListener('click', event => {
-    if (event.target.closest('button')) return;
-    openImageViewer();
-  });
-
-  art.addEventListener('keydown', event => {
+  art.onclick = () => openImageViewer();
+  art.onkeydown = event => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       openImageViewer();
     }
-  });
+  };
 }
+
 function openWork(i) {
   currentWork = i;
   const w = works[i];
