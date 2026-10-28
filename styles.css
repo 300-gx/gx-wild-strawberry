@@ -391,20 +391,20 @@
   position: relative;
 }
 
-/* 延展图片背景：放大、模糊 */
+/* 延展背景：柔和扩散，降低独立背景图的感觉 */
 .modal-art.has-real-image .art-image-backdrop {
   position: absolute;
-  inset: -12%;
-  width: 124%;
-  height: 124%;
+  inset: -16%;
+  width: 132%;
+  height: 132%;
   object-fit: cover;
-  filter: blur(38px) saturate(85%);
-  opacity: 0.85;
-  transform: scale(1.06);
+  filter: blur(46px) saturate(78%);
+  opacity: 0.92;
+  transform: scale(1.08);
   pointer-events: none;
 }
 
-/* 半透明磨砂玻璃层 */
+/* 极轻的光感，不再强调玻璃膜 */
 .modal-art.has-real-image::before {
   content: "";
   position: absolute;
@@ -412,19 +412,19 @@
   z-index: 1;
   background:
     radial-gradient(
-      ellipse at 20% 15%,
-      #ffffff10 0%,
-      transparent 60%
+      ellipse at 50% 45%,
+      #ffffff04 0%,
+      transparent 68%
     ),
     linear-gradient(
       145deg,
-      #ffffff06,
-      #ffffff02 55%,
-      #17231b08
+      #ffffff04 0%,
+      transparent 50%,
+      #17231b06 100%
     );
-  box-shadow: inset 0 0 60px #ffffff05;
-  backdrop-filter: blur(4px) saturate(108%);
-  -webkit-backdrop-filter: blur(4px) saturate(108%);
+  box-shadow: none;
+  backdrop-filter: blur(2px) saturate(105%);
+  -webkit-backdrop-filter: blur(2px) saturate(105%);
   pointer-events: none;
 }
 
