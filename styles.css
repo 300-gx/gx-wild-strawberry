@@ -342,7 +342,7 @@
   }
 
   /* 手机端：提示作品图片可以放大 */
-  .work-modal #modalArt::after {
+  .work-modal.image-work #modalArt::after
     content: '点击图片可放大查看 ↗';
     left: 50%;
     bottom: 14px;
@@ -365,4 +365,7 @@
     width: 68px;
     height: 68px;
   }
+}
+.gallery-controls[hidden] {
+  display: none;
 }
