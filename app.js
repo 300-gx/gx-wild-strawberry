@@ -1,6 +1,6 @@
 const works = window.GX_WORKS;
 const authors = window.GX_AUTHORS || [];
-
+const CONTACT_EMAIL = '';
 const noteItems = [
   {
     id: 'demo-comment-1',
@@ -383,9 +383,67 @@ function renderImageGallery() {
   };
 }
 
+function renderWorkComments(work) {
+  const platforms = [
+    {
+      key: 'x',
+      element: $('#commentLinkX'),
+      label: 'X 评论 · 前往评论 ↗'
+    },
+    {
+      key: 'lofter',
+      element: $('#commentLinkLofter'),
+      label: 'Lofter 评论 · 前往评论 ↗'
+    },
+    {
+      key: 'ao3',
+      element: $('#commentLinkAo3'),
+      label: 'AO3 评论 · 前往评论 ↗'
+    }
+  ];
+
+  const comments = work.externalComments || {};
+  let visibleCount = 0;
+
+  platforms.forEach(platform => {
+    const url = typeof comments[platform.key] === 'string'
+      ? comments[platform.key].trim()
+      : '';
+
+    const isValidUrl = /^https?:\/\//i.test(url);
+
+    platform.element.hidden = !isValidUrl;
+
+    if (isValidUrl) {
+      platform.element.href = url;
+      platform.element.textContent = platform.label;
+      visibleCount++;
+    } else {
+      platform.element.removeAttribute('href');
+    }
+  });
+
+  $('#modalCommentsStatus').hidden = visibleCount > 0;
+
+  const emailArea = $('#modalCommentsEmail');
+  const emailLink = $('#contactEmailLink');
+  const hasEmail = CONTACT_EMAIL.trim() !== '';
+
+  emailArea.hidden = visibleCount > 0 || !hasEmail;
+
+  if (hasEmail) {
+    emailLink.href = `mailto:${CONTACT_EMAIL.trim()}`;
+    emailLink.textContent = CONTACT_EMAIL.trim();
+  } else {
+    emailLink.removeAttribute('href');
+    emailLink.textContent = '项目联系邮箱（待配置）';
+  }
+}
+
 function openWork(i) {
   currentWork = i;
   const w = works[i];
+  renderWorkComments(w);
   const modalPanel = $('#workModal .work-modal');
   modalPanel.classList.toggle('image-work', w.kind === '图像');
   $('#modalTitle').textContent = w.title;
