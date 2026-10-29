@@ -356,12 +356,10 @@ frameWidget.addEventListener('keydown', event => {
   }
 });
 
-/* ===== 作者索引与作者详情页 ===== */
+/* ===== 作者索引：跳转到独立作者页 ===== */
 
 function getAuthorWorks(authorName) {
-  return works
-    .map((work, index) => ({ ...work, originalIndex: index }))
-    .filter(work => work.author === authorName);
+  return works.filter(work => work.author === authorName);
 }
 
 function renderAuthorList() {
@@ -370,21 +368,18 @@ function renderAuthorList() {
 
   list.replaceChildren();
 
-  const authorNames = [
-    ...new Set([
-      ...authors.map(author => author.name),
-      ...works.map(work => work.author).filter(Boolean)
-    ])
-  ];
+  const authorNames = [...new Set([
+    ...authors.map(author => author.name),
+    ...works.map(work => work.author).filter(Boolean)
+  ])];
 
   authorNames.forEach((name, index) => {
-    const profile = authors.find(author => author.name === name);
     const authorWorks = getAuthorWorks(name);
     const kinds = [...new Set(authorWorks.map(work => work.kind))];
 
-    const item = document.createElement('button');
-    item.type = 'button';
+    const item = document.createElement('a');
     item.className = 'author-item';
+    item.href = `author.html?name=${encodeURIComponent(name)}`;
     item.setAttribute('aria-label', `查看作者 ${name} 的详情`);
 
     const avatar = document.createElement('span');
@@ -407,133 +402,27 @@ function renderAuthorList() {
 
     info.append(authorName, meta);
     item.append(avatar, info, arrow);
-    item.addEventListener('click', () => openAuthorDetail(name));
-
     list.appendChild(item);
   });
 }
 
-function renderAuthorWorkCard(work) {
-  const card = document.createElement('article');
-  card.className = 'author-work-card';
-
-  const openButton = document.createElement('button');
-  openButton.type = 'button';
-  openButton.className = 'author-work-open';
-  openButton.setAttribute('aria-label', `打开作品：${work.title}`);
-
-  const visual = document.createElement('div');
-  visual.className = 'author-work-visual';
-
-  if (work.kind === '图像' && work.images?.[0]) {
-    const image = document.createElement('img');
-    image.src = work.images[0];
-    image.alt = `${work.title}的作品预览`;
-    image.loading = 'lazy';
-    visual.appendChild(image);
-  } else {
-    const mark = document.createElement('span');
-    mark.className = 'author-work-text-mark';
-    mark.textContent = 'Aa';
-    visual.appendChild(mark);
-  }
-
-  const details = document.createElement('div');
-  details.className = 'author-work-info';
-
-  const title = document.createElement('h3');
-  title.textContent = work.title;
-
-  const meta = document.createElement('p');
-  meta.textContent = `${work.kind} · ${work.date}`;
-
-  const description = document.createElement('p');
-  description.className = 'author-work-description';
-  description.textContent = work.description || '';
-
-  details.append(title, meta, description);
-  openButton.append(visual, details);
-
-  openButton.addEventListener('click', () => {
-    closeAuthorDetail();
-    openWork(work.originalIndex);
-  });
-
-  card.appendChild(openButton);
-  return card;
-}
-
-function openAuthorDetail(authorName) {
-  const profile = authors.find(author => author.name === authorName);
-  const authorWorks = getAuthorWorks(authorName);
-
-  const indexSection = $('.authors-section');
-  const detailSection = $('#authorDetail');
-  const profileContainer = $('#authorProfile');
-  const workGrid = $('#authorWorkGrid');
-
-  if (!indexSection || !detailSection || !profileContainer || !workGrid) {
-    notify('作者详情页尚未准备好，请刷新后重试');
-    return;
-  }
-
-  profileContainer.replaceChildren();
-
-  const avatar = document.createElement('div');
-  avatar.className = 'author-profile-avatar';
-  avatar.textContent = authorName.slice(0, 1);
-
-  const info = document.createElement('div');
-  info.className = 'author-profile-info';
-
-  const name = document.createElement('h2');
-  name.textContent = authorName;
-
-  const role = document.createElement('p');
-  role.className = 'author-profile-role';
-  role.textContent = profile?.role || '创作者';
-
-  const bio = document.createElement('p');
-  bio.className = 'author-profile-bio';
-  bio.textContent = profile?.bio || '这位作者还没有填写个人简介。';
-
-  info.append(name, role, bio);
-  profileContainer.append(avatar, info);
-
-  $('#authorWorkCount').textContent = `${authorWorks.length} 件作品`;
-
-  workGrid.replaceChildren();
-  authorWorks.forEach(work => {
-    workGrid.appendChild(renderAuthorWorkCard(work));
-  });
-
-  $('#authorEmpty').hidden = authorWorks.length !== 0;
-
-  indexSection.hidden = true;
-  detailSection.hidden = false;
-
-  history.replaceState(null, '', `#author-${encodeURIComponent(authorName)}`);
-  detailSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function closeAuthorDetail() {
-  const indexSection = $('.authors-section');
-  const detailSection = $('#authorDetail');
-
-  if (!indexSection || !detailSection) return;
-
-  detailSection.hidden = true;
-  indexSection.hidden = false;
-
-  history.replaceState(
-    null,
-    '',
-    window.location.pathname + window.location.search
-  );
-
-  indexSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-$('#authorBack')?.addEventListener('click', closeAuthorDetail);
-
 renderAuthorList();
+
+/* 从作者页返回首页时，尝试自动打开指定作品。 */
+const requestedWork = new URLSearchParams(window.location.search).get('work');
+
+if (requestedWork) {
+  const workIndex = works.findIndex(work => work.title === requestedWork);
+
+  if (workIndex >= 0) {
+    window.addEventListener('load', () => {
+      const card = document.querySelector(`[data-open="${workIndex}"]`);
+      if (card) {
+        card.click();
+      } else {
+        openWork(workIndex);
+      }
+    });
+  }
+}
+
