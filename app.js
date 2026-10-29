@@ -466,20 +466,20 @@ if (w.kind === '图像') {
 
   let readButton = $('#readWorkButton');
 
-  if (w.kind === '文字') {
-    if (!readButton) {
-      readButton = document.createElement('button');
-      readButton.id = 'readWorkButton';
-      readButton.className = 'primary-link';
-      readButton.type = 'button';
-      readButton.textContent = '阅读全文 →';
-      $('#modalDescription').after(readButton);
-      readButton.addEventListener('click', openReader);
-    }
-    readButton.hidden = false;
-  } else if (readButton) {
-    readButton.hidden = true;
-  }
+if (!readButton) {
+  readButton = document.createElement('button');
+  readButton.id = 'readWorkButton';
+  readButton.className = 'primary-link';
+  readButton.type = 'button';
+  $('#modalDescription').after(readButton);
+  readButton.addEventListener('click', openReader);
+}
+
+readButton.textContent = w.kind === '图像'
+  ? '欣赏完整作品 →'
+  : '阅读全文 →';
+
+readButton.hidden = false;
 
   updateModalLike();
   $('#workModal').hidden = false;
