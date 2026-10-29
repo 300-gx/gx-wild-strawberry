@@ -443,7 +443,7 @@ function renderWorkComments(work) {
 function openWork(i) {
   currentWork = i;
   const w = works[i];
-  renderWorkComments(w);
+ 
   const modalPanel = $('#workModal .work-modal');
   modalPanel.classList.toggle('image-work', w.kind === '图像');
   $('#modalTitle').textContent = w.title;
@@ -490,7 +490,7 @@ let previousCoolMode = false;
 
 function openReader() {
   const w = works[currentWork];
-
+  renderWorkComments(w);
   if (w.kind !== '文字') return;
 
   previousCoolMode = document.body.classList.contains('cool-mode');
