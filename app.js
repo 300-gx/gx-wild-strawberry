@@ -618,35 +618,59 @@ function getAuthorWorks(authorName) {
   return works.filter(work => work.author === authorName);
 }
 
+
 function renderAuthorList() {
   const list = $('#authorList');
   if (!list) return;
 
   list.replaceChildren();
 
-  const authorNames = [...new Set([
-    ...authors.map(author => author.name),
-    ...works.map(work => work.author).filter(Boolean)
-  ])];
+  // 先以作者资料为主，再补入作品中存在但资料表尚未登记的作者
+  const authorEntries = [...authors];
 
-  authorNames.forEach((name, index) => {
-    const authorWorks = getAuthorWorks(name);
+  works.forEach(work => {
+    const exists = authorEntries.some(author =>
+      (work.authorId && author.authorId === work.authorId) ||
+      (!work.authorId && author.name === work.author)
+    );
+
+    if (!exists && work.author) {
+      authorEntries.push({
+        authorId: work.authorId || '',
+        name: work.author,
+        bio: '',
+        role: '创作者'
+      });
+    }
+  });
+
+  authorEntries.forEach((author, index) => {
+    const authorWorks = works.filter(work =>
+      (author.authorId && work.authorId === author.authorId) ||
+      (!author.authorId && work.author === author.name)
+    );
+
     const kinds = [...new Set(authorWorks.map(work => work.kind))];
 
     const item = document.createElement('a');
     item.className = 'author-item';
-    item.href = `author.html?name=${encodeURIComponent(name)}`;
-    item.setAttribute('aria-label', `查看作者 ${name} 的详情`);
+
+    const authorKey = author.authorId
+      ? `id=${encodeURIComponent(author.authorId)}`
+      : `name=${encodeURIComponent(author.name)}`;
+
+    item.href = `author.html?${authorKey}`;
+    item.setAttribute('aria-label', `查看作者 ${author.name} 的详情`);
 
     const avatar = document.createElement('span');
     avatar.className = `author-avatar avatar-${(index % 4) + 1}`;
-    avatar.textContent = name.slice(0, 1);
+    avatar.textContent = author.name.slice(0, 1);
 
     const info = document.createElement('span');
     info.className = 'author-item-info';
 
     const authorName = document.createElement('b');
-    authorName.textContent = name;
+    authorName.textContent = author.name;
 
     const meta = document.createElement('small');
     meta.textContent =
@@ -661,6 +685,7 @@ function renderAuthorList() {
     list.appendChild(item);
   });
 }
+
 
 function renderRanking() {
   const list = $('#rankingList');
