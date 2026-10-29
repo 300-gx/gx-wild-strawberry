@@ -8,8 +8,135 @@ const comments = [
 ];
 let activeFilter='全部'; let commentIndex=0; let toastTimer; const liked=new Set(); const bookmarked=new Set(); let currentWork=0;
 const $=s=>document.querySelector(s); const $$=s=>[...document.querySelectorAll(s)];
+
+function renderWorkCards() {
+  const grid = $('#workGrid');
+  if (!grid) return;
+
+  grid.replaceChildren();
+
+  works.forEach((w, i) => {
+    const card = document.createElement('article');
+    card.className = 'work-card';
+    card.dataset.workIndex = String(i);
+    card.dataset.kind = w.kind;
+    card.dataset.title = w.title;
+    card.dataset.author = w.author;
+
+    const visualClasses = ['visual-one', 'visual-two', 'visual-three', 'visual-four'];
+    const visualLabels = ['SUMMER / GX', 'THE FOREST KNOWS', 'AFTER SCHOOL', 'TIDE NOTES / 07'];
+    const visualParts = [
+      '<span class="visual-orbit"></span><span class="visual-sun"></span>',
+      '<span class="forest-moon"></span><span class="forest-line"></span>',
+      '<span class="window-shape"></span><span class="window-light"></span>',
+      '<span class="tide-circle"></span><span class="tide-wave"></span>'
+    ];
+
+    const visual = document.createElement('button');
+    visual.type = 'button';
+    visual.className = `work-visual ${visualClasses[i % visualClasses.length]}`;
+    visual.dataset.open = String(i);
+    visual.setAttribute('aria-label', `打开${w.title}`);
+    visual.innerHTML = visualParts[i % visualParts.length];
+
+    const caption = document.createElement('span');
+    caption.className = 'visual-caption';
+    caption.textContent = visualLabels[i % visualLabels.length];
+
+    const stamp = document.createElement('span');
+    stamp.className = 'visual-stamp';
+    stamp.textContent = w.author;
+
+    visual.append(caption, stamp);
+
+    const meta = document.createElement('div');
+    meta.className = 'work-meta';
+
+    const info = document.createElement('div');
+
+    const type = document.createElement('span');
+    type.className = 'work-type';
+    type.textContent = w.kind === '图像'
+      ? 'ILLUSTRATION / IMAGE SET'
+      : 'FICTION / TEXT WORK';
+
+    const heading = document.createElement('h3');
+    const titleButton = document.createElement('button');
+    titleButton.type = 'button';
+    titleButton.className = 'title-button';
+    titleButton.dataset.open = String(i);
+    titleButton.textContent = w.title;
+    heading.appendChild(titleButton);
+
+    const authorLine = document.createElement('p');
+    authorLine.className = 'author-line';
+    authorLine.append(document.createTextNode(w.author + ' '));
+
+    const separator = document.createElement('span');
+    separator.textContent = '·';
+
+    authorLine.append(separator, document.createTextNode(' ' + w.date));
+    info.append(type, heading, authorLine);
+
+    const likeButton = document.createElement('button');
+    likeButton.type = 'button';
+    likeButton.className = 'like-button';
+    likeButton.dataset.like = String(i);
+    likeButton.setAttribute('aria-label', `点赞${w.title}`);
+    likeButton.innerHTML = `♡ <span>${w.likes ?? 0}</span>`;
+
+    meta.append(info, likeButton);
+
+    const tags = document.createElement('div');
+    tags.className = 'tag-line';
+
+    (w.tags || []).forEach(tag => {
+      const item = document.createElement('span');
+      item.textContent = '#' + tag;
+      tags.appendChild(item);
+    });
+
+    card.append(visual, meta, tags);
+    grid.appendChild(card);
+  });
+
+  $('#shownCount').textContent = String(works.length).padStart(2, '0');
+  $('#emptyState').hidden = works.length !== 0;
+}
+
 function notify(message){const el=$('#toast');el.textContent=message;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2300)}
-function applyFilters(){const query=$('#searchInput').value.trim().toLowerCase();let shown=0;$$('.work-card').forEach((card,i)=>{const w=works[i];const filterMatch=activeFilter==='全部'||w.kind===activeFilter||w.tags.includes(activeFilter);const haystack=[w.title,w.author,...w.tags,w.kind].join(' ').toLowerCase();const queryMatch=!query||haystack.includes(query);card.hidden=!(filterMatch&&queryMatch);if(!card.hidden)shown++});$('#shownCount').textContent=String(shown).padStart(2,'0');$('#emptyState').hidden=shown!==0}
+
+function applyFilters() {
+  const query = $('#searchInput').value.trim().toLowerCase();
+  let shown = 0;
+
+  $$('.work-card').forEach(card => {
+    const i = Number(card.dataset.workIndex);
+    const w = works[i];
+    if (!w) return;
+
+    const filterMatch =
+      activeFilter === '全部' ||
+      w.kind === activeFilter ||
+      (w.tags || []).includes(activeFilter);
+
+    const haystack = [
+      w.title,
+      w.author,
+      w.kind,
+      ...(w.tags || [])
+    ].join(' ').toLowerCase();
+
+    const queryMatch = !query || haystack.includes(query);
+    card.hidden = !(filterMatch && queryMatch);
+
+    if (!card.hidden) shown++;
+  });
+
+  $('#shownCount').textContent = String(shown).padStart(2, '0');
+  $('#emptyState').hidden = shown !== 0;
+}
+
 function setLiked(i){const button=$(`[data-like="${i}"]`);if(liked.has(i)){liked.delete(i);works[i].likes--;button.classList.remove('liked');button.innerHTML=`♡ <span>${works[i].likes}</span>`;notify('已取消喜欢')}else{liked.add(i);works[i].likes++;button.classList.add('liked');button.innerHTML=`♥ <span>${works[i].likes}</span>`;notify('已加入喜欢')}if(currentWork===i)updateModalLike()}
 function updateModalLike(){const b=$('#modalLike');if(liked.has(currentWork)){b.innerHTML='♥ 已喜欢';}else{b.innerHTML='♡ 喜欢这件作品';}}
 let currentImageIndex = 0;
@@ -289,7 +416,19 @@ $('#readerModal').addEventListener('click', event => {
 });
 function closeModal(id){$('#'+id).hidden=true;if($$('.modal-backdrop:not([hidden])').length===0)document.body.style.overflow=''}
 $('#filters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(!b)return;activeFilter=b.dataset.filter;$$('.filter-chip').forEach(c=>c.classList.toggle('selected',c===b));applyFilters()});$('#searchInput').addEventListener('input',applyFilters);
-$$('[data-open]').forEach(b=>b.addEventListener('click',()=>openWork(Number(b.dataset.open))));$$('[data-like]').forEach(b=>b.addEventListener('click',()=>setLiked(Number(b.dataset.like))));
+$('#workGrid').addEventListener('click', event => {
+  const likeButton = event.target.closest('[data-like]');
+  if (likeButton) {
+    event.stopPropagation();
+    setLiked(Number(likeButton.dataset.like));
+    return;
+  }
+
+  const openButton = event.target.closest('[data-open]');
+  if (openButton) {
+    openWork(Number(openButton.dataset.open));
+  }
+});
 $('#randomize').addEventListener('click',()=>{const grid=$('#workGrid');const cards=$$('.work-card');for(let i=cards.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));grid.insertBefore(cards[j],cards[i])}notify('作品顺序已随机更新')});
 $('#nextComment').addEventListener('click',()=>{commentIndex=(commentIndex+1)%comments.length;$('#randomComment').textContent=comments[commentIndex]});
 $('#themeToggle').addEventListener('click',()=>{document.body.classList.toggle('cool-mode');notify(document.body.classList.contains('cool-mode')?'已切换为冷色阅读模式':'已切换为暖色模式')});
@@ -405,7 +544,7 @@ function renderAuthorList() {
     list.appendChild(item);
   });
 }
-
+renderWorkCards();
 renderAuthorList();
 
 /* 从作者页返回首页时，尝试自动打开指定作品。 */
