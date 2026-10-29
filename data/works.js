@@ -23,7 +23,7 @@ window.GX_WORKS = [
     author: "雾岛",
     authorId: "author_wudao",
     kind: "文字",
-    tags: ["游城十代", "text"],
+    tags: ["游城十代", "十水仙"],
     date: "2026.10.19",
     pinned: false,
     pinOrder: 0,
