@@ -61,7 +61,37 @@
   <div class="modal-art" id="modalArt"></div>
   <div class="gallery-controls" id="galleryControls"></div>
 </div>
-<div class="modal-content"><p class="eyebrow" id="modalType">WORK DETAIL</p><h2 id="modalTitle">作品标题</h2><p class="modal-author" id="modalAuthor"></p><div class="modal-tags" id="modalTags"></div><p class="modal-description" id="modalDescription"></p><div class="modal-actions"><button class="primary-link" id="modalLike">♡ 喜欢这件作品</button><button class="subtle-link" id="modalBookmark">＋ 收藏 / 书签</button><button class="subtle-link" id="modalShare">↗ 分享</button></div><p class="prototype-note">原型演示：作品、点赞和收藏数据目前为本地示例，尚未连接正式数据库。</p></div></section></div>
+<div class="modal-content"><p class="eyebrow" id="modalType">WORK DETAIL</p><h2 id="modalTitle">作品标题</h2><p class="modal-author" id="modalAuthor"></p><div class="modal-tags" id="modalTags"></div><p class="modal-description" id="modalDescription"></p><div class="modal-actions"><button class="primary-link" id="modalLike">♡ 喜欢这件作品</button><button class="subtle-link" id="modalBookmark">＋ 收藏 / 书签</button><button class="subtle-link" id="modalShare">↗ 分享</button></div>
+
+<section class="modal-comments" id="modalComments">
+  <p class="eyebrow">DISCUSSION / 评论入口</p>
+
+  <p class="modal-comments-status" id="modalCommentsStatus" hidden>
+    暂未开放评论入口
+  </p>
+
+  <div class="modal-comment-links" id="modalCommentLinks">
+    <a class="subtle-link modal-comment-link" id="commentLinkX"
+       href="#" target="_blank" rel="noopener noreferrer" hidden>
+      X 评论 · 前往评论 ↗
+    </a>
+    <a class="subtle-link modal-comment-link" id="commentLinkLofter"
+       href="#" target="_blank" rel="noopener noreferrer" hidden>
+      Lofter 评论 · 前往评论 ↗
+    </a>
+    <a class="subtle-link modal-comment-link" id="commentLinkAo3"
+       href="#" target="_blank" rel="noopener noreferrer" hidden>
+      AO3 评论 · 前往评论 ↗
+    </a>
+  </div>
+
+  <p class="modal-comments-email" id="modalCommentsEmail" hidden>
+    也欢迎通过
+    <a id="contactEmailLink" href="#">项目联系邮箱</a>
+    联系我们，分享你的想法。
+  </p>
+</section>
+<p class="prototype-note">原型演示：作品、点赞和收藏数据目前为本地示例，尚未连接正式数据库。</p></div></section></div>
   <div class="modal-backdrop" id="subscribeModal" hidden><section class="subscribe-modal" role="dialog" aria-modal="true" aria-labelledby="subscribeTitle"><button class="modal-close" data-close="subscribeModal" aria-label="关闭">×</button><p class="eyebrow">WEEKLY LETTER</p><h2 id="subscribeTitle">把新作品寄给你。</h2><p>每周汇总一次，不发送其他邮件。正式邮件订阅服务将在后续阶段接入。</p><form id="subscribeForm"><label for="emailInput">邮箱地址</label><input id="emailInput" type="email" placeholder="you@example.com" required><button class="primary-link" type="submit">加入订阅名单 ↗</button><small id="subscribeMessage" aria-live="polite">演示版本不会真正发送或保存邮箱。</small></form></section></div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <div class="reader-backdrop" id="readerModal" hidden>
