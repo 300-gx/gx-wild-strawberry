@@ -1118,7 +1118,8 @@
   }
 }
 
-/* 阅读页：多张图片纵向排列、留白与画框适配 */
+
+/* 阅读页：图片保持原始比例，高度自然适应 */
 .reader-image-gallery {
   display: flex;
   flex-direction: column;
@@ -1131,45 +1132,59 @@
 .reader-image-stage {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   width: 100%;
   min-width: 0;
   margin: 0;
 }
 
+/* 阅读页不显示画框，统一展示宽度 */
 .reader-image-stage .modal-art {
+  position: relative;
   width: 100%;
-  min-width: 0;
+  max-width: 620px;
+  height: auto;
   min-height: 0;
-  height: min(72vh, 760px);
-  overflow: hidden;
+  overflow: visible;
+  background: transparent;
+  border: 0;
 }
 
-/* 主图完整显示，不拉伸、不裁切 */
+/* 隐藏阅读页的装饰背景与画框文字 */
+.reader-image-stage .modal-art::before,
+.reader-image-stage .modal-art::after,
+.reader-image-stage .art-image-backdrop {
+  display: none;
+}
+
+/* 取消画框式定位，让图片按自身比例自然排版 */
 .reader-image-stage .modal-art.has-real-image .art-image-main-wrap {
-  padding: 18px;
+  position: static;
+  display: block;
+  width: 100%;
+  height: auto;
+  padding: 0;
 }
 
 .reader-image-stage .modal-art.has-real-image .art-image-main {
-  width: auto;
+  display: block;
+  width: 100%;
   height: auto;
   max-width: 100%;
-  max-height: 100%;
+  max-height: none;
   object-fit: contain;
   object-position: center;
+  filter: none;
 }
 
-/* 手机端：缩小画框高度与图片间距 */
+/* 手机端：收紧图片间距，宽度随屏幕自适应 */
 @media (max-width: 620px) {
   .reader-image-gallery {
     gap: 24px;
   }
 
   .reader-image-stage .modal-art {
-    height: min(62vh, 560px);
-  }
-
-  .reader-image-stage .modal-art.has-real-image .art-image-main-wrap {
-    padding: 12px;
+    width: 100%;
+    max-width: 100%;
   }
 }
