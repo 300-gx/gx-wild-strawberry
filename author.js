@@ -2,25 +2,33 @@
 const works = window.GX_WORKS || [];
 const authors = window.GX_AUTHORS || [];
 const params = new URLSearchParams(window.location.search);
+const authorId = params.get('id');
 const authorName = params.get('name');
 const root = document.querySelector('#authorPageContent');
-
 function renderAuthorPage() {
   if (!root) return;
 
-  const profile = authors.find(author => author.name === authorName);
-  const authorWorks = works
-    .map((work, index) => ({ ...work, originalIndex: index }))
-    .filter(work => work.author === authorName);
+const profile = authorId
+  ? authors.find(author => author.authorId === authorId)
+  : authors.find(author => author.name === authorName);
 
-  root.replaceChildren();
+const resolvedName = profile?.name || authorName;
 
-  if (!authorName || (!profile && authorWorks.length === 0)) {
+const authorWorks = works
+  .map((work, index) => ({ ...work, originalIndex: index }))
+  .filter(work => {
+    if (authorId) return work.authorId === authorId;
+    return work.author === authorName;
+  });
+
+root.replaceChildren();
+
+if (!resolvedName || (!profile && authorWorks.length === 0)) {
     const message = document.createElement('p');
     message.className = 'author-page-message';
     message.textContent = '没有找到这位作者，请返回作者索引选择其他作者。';
     root.appendChild(message);
-    document.title = '未找到作者 · GX：野草莓之地';
+    document.title = `${resolvedName} · 作者主页 · GX：野草莓之地`;
     return;
   }
 
@@ -31,11 +39,11 @@ function renderAuthorPage() {
 
   const avatar = document.createElement('div');
   avatar.className = 'author-page-avatar';
-  avatar.textContent = authorName.slice(0, 1);
+  avatar.textContent = resolvedName.slice(0, 1);
 
   const info = document.createElement('div');
   const heading = document.createElement('h1');
-  heading.textContent = authorName;
+  heading.textContent = resolvedName;
 
   const role = document.createElement('p');
   role.className = 'author-page-role';
