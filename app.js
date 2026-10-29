@@ -440,53 +440,84 @@ function renderWorkComments(work) {
   }
 }
 
-function openWork(i) {
-  currentWork = i;
-  const w = works[i];
- 
-  const modalPanel = $('#workModal .work-modal');
-  modalPanel.classList.toggle('image-work', w.kind === '图像');
-  $('#modalTitle').textContent = w.title;
-  $('#modalAuthor').textContent = `${w.author} · ${w.date} · ${w.kind}`;
-  $('#modalType').textContent = w.kind === '图像'
+function openReader() {
+  const w = works[currentWork];
+  renderWorkComments(w);
+
+  previousCoolMode = document.body.classList.contains('cool-mode');
+
+  $('#readerTitle').textContent = w.title;
+  $('#readerAuthor').textContent = `${w.author} · ${w.date}`;
+  $('#readerType').textContent = w.kind === '图像'
     ? 'ILLUSTRATION / IMAGE SET'
     : 'FICTION / TEXT WORK';
-  $('#modalTags').innerHTML = w.tags.map(t => `<span>#${t}</span>`).join('');
-  $('#modalDescription').textContent = w.description;
-if (w.kind === '图像') {
-  currentImageIndex = 0;
-  renderImageGallery();
-} else {
-  $('#modalArt').replaceChildren();
-  $('#galleryControls').replaceChildren();
-  $('#galleryControls').hidden = true;
-  $('#modalArt').className = `modal-art modal-art-${i}`;
-}
-  $('#modalBookmark').textContent = bookmarked.has(i) ? '✓ 已收藏' : '＋ 收藏 / 书签';
 
-  let readButton = $('#readWorkButton');
+  const content = $('#readerContent');
+  const gallery = $('#readerImageGallery');
 
-if (!readButton) {
-  readButton = document.createElement('button');
-  readButton.id = 'readWorkButton';
-  readButton.className = 'primary-link';
-  readButton.type = 'button';
-  $('#modalDescription').after(readButton);
-  readButton.addEventListener('click', openReader);
-}
+  content.replaceChildren();
+  gallery.replaceChildren();
 
-readButton.textContent = w.kind === '图像'
-  ? '欣赏完整作品 →'
-  : '阅读全文 →';
+  if (w.kind === '图像') {
+    content.hidden = true;
+    gallery.hidden = false;
 
-readButton.hidden = false;
+    const total = w.images?.length || (currentWork === 0 ? 3 : 5);
 
-  updateModalLike();
-  $('#workModal').hidden = false;
+    for (let imageIndex = 0; imageIndex < total; imageIndex++) {
+      const stage = document.createElement('div');
+      stage.className = 'reader-image-stage';
+
+      const art = document.createElement('div');
+      renderArtImage(art, currentWork, imageIndex);
+
+      art.style.cursor = 'zoom-in';
+      art.setAttribute('role', 'button');
+      art.setAttribute('tabindex', '0');
+      art.setAttribute(
+        'aria-label',
+        `放大查看第 ${imageIndex + 1} 张作品图片`
+      );
+
+      const openThisImage = () => {
+        currentImageIndex = imageIndex;
+        openImageViewer();
+      };
+
+      art.addEventListener('click', openThisImage);
+
+      art.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openThisImage();
+        }
+      });
+
+      stage.appendChild(art);
+      gallery.appendChild(stage);
+    }
+  } else {
+    gallery.hidden = true;
+    content.hidden = false;
+
+    if (w.content) {
+      w.content.split(/\n\s*\n/).forEach(paragraph => {
+        const p = document.createElement('p');
+        p.textContent = paragraph;
+        content.appendChild(p);
+      });
+    } else {
+      const p = document.createElement('p');
+      p.textContent = '正文尚未录入。';
+      content.appendChild(p);
+    }
+  }
+
+  $('#workModal').hidden = true;
+  $('#readerModal').hidden = false;
+  document.body.classList.add('cool-mode');
   document.body.style.overflow = 'hidden';
 }
-
-let previousCoolMode = false;
 
 function openReader() {
   const w = works[currentWork];
