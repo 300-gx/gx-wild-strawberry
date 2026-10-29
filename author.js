@@ -92,7 +92,7 @@ if (!resolvedName || (!profile && authorWorks.length === 0)) {
     card.className = 'author-page-work-card';
 
     const link = document.createElement('a');
-    link.href = `index.html?work=${encodeURIComponent(work.title)}#works`;
+    link.href = `index.html?workId=${encodeURIComponent(work.workId)}#works`;
     link.setAttribute('aria-label', `查看作品：${work.title}`);
 
     const visual = document.createElement('div');
