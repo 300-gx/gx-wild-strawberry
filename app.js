@@ -491,27 +491,97 @@ let previousCoolMode = false;
 function openReader() {
   const w = works[currentWork];
   renderWorkComments(w);
-  if (w.kind !== '文字') return;
 
   previousCoolMode = document.body.classList.contains('cool-mode');
 
   $('#readerTitle').textContent = w.title;
   $('#readerAuthor').textContent = `${w.author} · ${w.date}`;
-  $('#readerType').textContent = 'FICTION / TEXT WORK';
+  $('#readerType').textContent = w.kind === '图像'
+    ? 'ILLUSTRATION / IMAGE SET'
+    : 'FICTION / TEXT WORK';
 
   const content = $('#readerContent');
-  content.replaceChildren();
+  const gallery = $('#readerImageGallery');
 
-  if (w.content) {
-    w.content.split(/\n\s*\n/).forEach(paragraph => {
-      const p = document.createElement('p');
-      p.textContent = paragraph;
-      content.appendChild(p);
-    });
+  content.replaceChildren();
+  gallery.replaceChildren();
+
+  if (w.kind === '图像') {
+    content.hidden = true;
+    gallery.hidden = false;
+
+    const stage = document.createElement('div');
+    stage.className = 'reader-image-stage';
+
+    const art = document.createElement('div');
+    const total = w.images?.length || (currentWork === 0 ? 3 : 5);
+    const controls = document.createElement('div');
+    controls.className = 'gallery-controls';
+
+    function renderImage() {
+      renderArtImage(art, currentWork, currentImageIndex);
+      art.style.cursor = 'zoom-in';
+      art.setAttribute('role', 'button');
+      art.setAttribute('tabindex', '0');
+      art.setAttribute('aria-label', '放大查看作品图片');
+
+      art.onclick = openImageViewer;
+      art.onkeydown = event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openImageViewer();
+        }
+      };
+
+      controls.replaceChildren();
+
+      if (total > 1) {
+        const prev = document.createElement('button');
+        prev.type = 'button';
+        prev.textContent = '‹';
+        prev.setAttribute('aria-label', '上一张图片');
+
+        const count = document.createElement('span');
+        count.className = 'gallery-count';
+        count.textContent = `${currentImageIndex + 1} / ${total}`;
+
+        const next = document.createElement('button');
+        next.type = 'button';
+        next.textContent = '›';
+        next.setAttribute('aria-label', '下一张图片');
+
+        prev.addEventListener('click', () => {
+          currentImageIndex = (currentImageIndex - 1 + total) % total;
+          renderImage();
+        });
+
+        next.addEventListener('click', () => {
+          currentImageIndex = (currentImageIndex + 1) % total;
+          renderImage();
+        });
+
+        controls.append(prev, count, next);
+      }
+    }
+
+    stage.appendChild(art);
+    gallery.append(stage, controls);
+    renderImage();
   } else {
-    const p = document.createElement('p');
-    p.textContent = '正文尚未录入。';
-    content.appendChild(p);
+    gallery.hidden = true;
+    content.hidden = false;
+
+    if (w.content) {
+      w.content.split(/\n\s*\n/).forEach(paragraph => {
+        const p = document.createElement('p');
+        p.textContent = paragraph;
+        content.appendChild(p);
+      });
+    } else {
+      const p = document.createElement('p');
+      p.textContent = '正文尚未录入。';
+      content.appendChild(p);
+    }
   }
 
   $('#workModal').hidden = true;
@@ -519,7 +589,6 @@ function openReader() {
   document.body.classList.add('cool-mode');
   document.body.style.overflow = 'hidden';
 }
-
 function closeReader() {
   $('#readerModal').hidden = true;
   if (!previousCoolMode) {
