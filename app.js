@@ -492,7 +492,62 @@ $('#workGrid').addEventListener('click', event => {
   }
 });
 $('#randomize').addEventListener('click',()=>{const grid=$('#workGrid');const cards=$$('.work-card');for(let i=cards.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));grid.insertBefore(cards[j],cards[i])}notify('作品顺序已随机更新')});
-$('#nextComment').addEventListener('click',()=>{commentIndex=(commentIndex+1)%comments.length;$('#randomComment').textContent=comments[commentIndex]});
+
+function getAvailableNotes() {
+  if (noteMode === 'mixed') return noteItems;
+  return noteItems.filter(item => item.type === noteMode);
+}
+
+function showRandomNote() {
+  const available = getAvailableNotes();
+
+  if (!available.length) {
+    $('#randomComment').textContent = '这个分类暂时还没有内容。';
+    $('#noteByline').textContent = '暂无内容';
+    $('#noteSource').textContent = '之后可以从后台添加';
+    $('#noteAvatar').textContent = '…';
+    return;
+  }
+
+  let choices = available.filter(item => item.id !== currentNoteId);
+  if (!choices.length) choices = available;
+
+  const item = choices[Math.floor(Math.random() * choices.length)];
+  currentNoteId = item.id;
+
+  $('#randomComment').textContent = item.content;
+  $('#noteByline').textContent = item.byline ||
+    (item.type === 'comment' ? '评论摘选' : '碎碎念');
+  $('#noteSource').textContent = item.source ||
+    (item.type === 'comment' ? '外站评论摘选' : '创作者手记');
+  $('#noteAvatar').textContent = item.type === 'comment' ? '“' : '✳';
+
+  const eyebrow = $('.quote-panel .eyebrow');
+  if (eyebrow) {
+    eyebrow.textContent = item.type === 'comment'
+      ? 'A RANDOM NOTE / 随机评论'
+      : 'A RANDOM NOTE / 碎碎念';
+  }
+}
+
+$$('[data-note-mode]').forEach(button => {
+  button.addEventListener('click', () => {
+    noteMode = button.dataset.noteMode;
+
+    $$('[data-note-mode]').forEach(item => {
+      const active = item === button;
+      item.classList.toggle('active', active);
+      item.setAttribute('aria-pressed', String(active));
+    });
+
+    currentNoteId = null;
+    showRandomNote();
+  });
+});
+
+$('#nextComment').addEventListener('click', showRandomNote);
+showRandomNote();
+
 $('#themeToggle').addEventListener('click',()=>{document.body.classList.toggle('cool-mode');notify(document.body.classList.contains('cool-mode')?'已切换为冷色阅读模式':'已切换为暖色模式')});
 $('#menuToggle').addEventListener('click',()=>$('.main-nav').classList.toggle('open'));$$('.main-nav a').forEach(a=>a.addEventListener('click',()=>$('.main-nav').classList.remove('open')));
 $$('[data-close]').forEach(b=>b.addEventListener('click',()=>closeModal(b.dataset.close)));$$('.modal-backdrop').forEach(backdrop=>backdrop.addEventListener('click',e=>{if(e.target===backdrop)closeModal(backdrop.id)}));document.addEventListener('keydown',e=>{if(e.key==='Escape')$$('.modal-backdrop:not([hidden])').forEach(m=>closeModal(m.id))});
