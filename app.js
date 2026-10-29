@@ -1,11 +1,51 @@
 const works = window.GX_WORKS;
 const authors = window.GX_AUTHORS || [];
-const comments = [
- '读到最后才意识到，原来前面那些看似平静的细节一直在回应结尾。想再读一遍。',
- '好喜欢这组图里留白的方式，像是声音停下之后，光还留在原地。',
- '“不再逃跑”那一段很有力量，不是突然变得勇敢，而是终于愿意留下来。',
- '颜色和文字的气质很一致，像在同一个傍晚里发生的事情。'
+
+const noteItems = [
+  {
+    id: 'demo-comment-1',
+    type: 'comment',
+    content: '读到最后才意识到，原来前面那些看似平静的细节一直在回应结尾。想再读一遍。',
+    byline: '评论摘选示例',
+    source: '演示内容 · 对应作品《森林不会回答》',
+    workId: 'work_forest_001',
+    sourceUrl: '',
+    isDemo: true
+  },
+  {
+    id: 'demo-comment-2',
+    type: 'comment',
+    content: '好喜欢这组图里留白的方式，像是声音停下之后，光还留在原地。',
+    byline: '评论摘选示例',
+    source: '演示内容 · 对应图像作品',
+    workId: 'work_summer_001',
+    sourceUrl: '',
+    isDemo: true
+  },
+  {
+    id: 'demo-thought-1',
+    type: 'thought',
+    content: '最近又翻出了一段旧稿，发现当时没写完的东西，现在仍然想继续写下去。',
+    byline: '站长碎碎念（示例）',
+    source: '演示内容 · 站长手记',
+    workId: null,
+    sourceUrl: '',
+    isDemo: true
+  },
+  {
+    id: 'demo-thought-2',
+    type: 'thought',
+    content: '希望这个地方能慢慢收集起大家喜欢的故事，也留下创作者在作品之外的声音。',
+    byline: '站长碎碎念（示例）',
+    source: '演示内容 · 社区建设记录',
+    workId: null,
+    sourceUrl: '',
+    isDemo: true
+  }
 ];
+let noteMode = 'mixed';
+let currentNoteId = null;
+
 let activeFilter='全部'; let commentIndex=0; let toastTimer; const liked=new Set(); const bookmarked=new Set(); let currentWork=0;
 const $=s=>document.querySelector(s); const $$=s=>[...document.querySelectorAll(s)];
 
