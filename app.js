@@ -439,7 +439,56 @@ function renderWorkComments(work) {
     emailLink.textContent = '项目联系邮箱（待配置）';
   }
 }
+function openWork(i) {
+  currentWork = i;
+  const w = works[i];
 
+  const modalPanel = $('#workModal .work-modal');
+  modalPanel.classList.toggle('image-work', w.kind === '图像');
+
+  $('#modalTitle').textContent = w.title;
+  $('#modalAuthor').textContent = `${w.author} · ${w.date} · ${w.kind}`;
+  $('#modalType').textContent = w.kind === '图像'
+    ? 'ILLUSTRATION / IMAGE SET'
+    : 'FICTION / TEXT WORK';
+  $('#modalTags').innerHTML = w.tags.map(t => `<span>#${t}</span>`).join('');
+  $('#modalDescription').textContent = w.description;
+
+  if (w.kind === '图像') {
+    currentImageIndex = 0;
+    renderImageGallery();
+  } else {
+    $('#modalArt').replaceChildren();
+    $('#galleryControls').replaceChildren();
+    $('#galleryControls').hidden = true;
+    $('#modalArt').className = `modal-art modal-art-${i}`;
+  }
+
+  $('#modalBookmark').textContent = bookmarked.has(i)
+    ? '✓ 已收藏'
+    : '＋ 收藏 / 书签';
+
+  let readButton = $('#readWorkButton');
+
+  if (!readButton) {
+    readButton = document.createElement('button');
+    readButton.id = 'readWorkButton';
+    readButton.className = 'primary-link';
+    readButton.type = 'button';
+    $('#modalDescription').after(readButton);
+    readButton.addEventListener('click', openReader);
+  }
+
+  readButton.textContent = w.kind === '图像'
+    ? '欣赏完整作品 →'
+    : '阅读全文 →';
+
+  readButton.hidden = false;
+
+  updateModalLike();
+  $('#workModal').hidden = false;
+  document.body.style.overflow = 'hidden';
+}
 function openReader() {
   const w = works[currentWork];
   renderWorkComments(w);
