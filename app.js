@@ -722,27 +722,26 @@ function renderRanking() {
 
     item.append(rank, info, likes);
     list.appendChild(item);
+  });const pageParams = new URLSearchParams(window.location.search);
+const requestedWorkId = pageParams.get('workId');
+const requestedWorkTitle = pageParams.get('work');
+
+const requestedWorkIndex = works.findIndex(work =>
+  requestedWorkId
+    ? work.workId === requestedWorkId
+    : work.title === requestedWorkTitle
+);
+
+if (requestedWorkIndex >= 0) {
+  window.addEventListener('load', () => {
+    openWork(requestedWorkIndex);
   });
+}
 }
 renderWorkCards();
 renderRanking();
 renderAuthorList();
 
 /* 从作者页返回首页时，尝试自动打开指定作品。 */
-const requestedWork = new URLSearchParams(window.location.search).get('work');
 
-if (requestedWork) {
-  const workIndex = works.findIndex(work => work.title === requestedWork);
-
-  if (workIndex >= 0) {
-    window.addEventListener('load', () => {
-      const card = document.querySelector(`[data-open="${workIndex}"]`);
-      if (card) {
-        card.click();
-      } else {
-        openWork(workIndex);
-      }
-    });
-  }
-}
 
