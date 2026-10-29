@@ -544,7 +544,46 @@ function renderAuthorList() {
     list.appendChild(item);
   });
 }
+
+function renderRanking() {
+  const list = $('#rankingList');
+  if (!list) return;
+
+  list.replaceChildren();
+
+  const rankedWorks = works
+    .filter(work => work.status !== 'hidden' && work.status !== 'draft')
+    .slice()
+    .sort((a, b) => (b.likes ?? 0) - (a.likes ?? 0))
+    .slice(0, 3);
+
+  rankedWorks.forEach((work, index) => {
+    const item = document.createElement('li');
+
+    const rank = document.createElement('span');
+    rank.className = 'rank-num';
+    rank.textContent = String(index + 1).padStart(2, '0');
+
+    const info = document.createElement('div');
+
+    const title = document.createElement('b');
+    title.textContent = work.title;
+
+    const meta = document.createElement('small');
+    meta.textContent = `${work.author} · ${work.kind}`;
+
+    info.append(title, meta);
+
+    const likes = document.createElement('span');
+    likes.className = 'rank-likes';
+    likes.textContent = `♡ ${work.likes ?? 0}`;
+
+    item.append(rank, info, likes);
+    list.appendChild(item);
+  });
+}
 renderWorkCards();
+renderRanking();
 renderAuthorList();
 
 /* 从作者页返回首页时，尝试自动打开指定作品。 */
