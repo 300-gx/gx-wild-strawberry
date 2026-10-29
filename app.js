@@ -137,7 +137,7 @@ function applyFilters() {
   $('#emptyState').hidden = shown !== 0;
 }
 
-function setLiked(i){const button=$(`[data-like="${i}"]`);if(liked.has(i)){liked.delete(i);works[i].likes--;button.classList.remove('liked');button.innerHTML=`♡ <span>${works[i].likes}</span>`;notify('已取消喜欢')}else{liked.add(i);works[i].likes++;button.classList.add('liked');button.innerHTML=`♥ <span>${works[i].likes}</span>`;notify('已加入喜欢')}if(currentWork===i)updateModalLike()}
+function setLiked(i){const button=$(`[data-like="${i}"]`);if(liked.has(i)){liked.delete(i);works[i].likes--;button.classList.remove('liked');button.innerHTML=`♡ <span>${works[i].likes}</span>`;notify('已取消喜欢')}else{liked.add(i);works[i].likes++;button.classList.add('liked');button.innerHTML=`♥ <span>${works[i].likes}</span>`;notify('已加入喜欢')}if(currentWork===i)updateModalLike()renderRanking();}
 function updateModalLike(){const b=$('#modalLike');if(liked.has(currentWork)){b.innerHTML='♥ 已喜欢';}else{b.innerHTML='♡ 喜欢这件作品';}}
 let currentImageIndex = 0;
 
