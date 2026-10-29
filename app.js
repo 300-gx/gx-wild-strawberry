@@ -1,4 +1,5 @@
 const works = window.GX_WORKS;
+const authors = window.GX_AUTHORS || [];
 const comments = [
  '读到最后才意识到，原来前面那些看似平静的细节一直在回应结尾。想再读一遍。',
  '好喜欢这组图里留白的方式，像是声音停下之后，光还留在原地。',
