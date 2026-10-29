@@ -943,3 +943,89 @@
     gap: 16px;
   }
 }
+
+/* ===== 作者页布局优化：居中、留白、边框 ===== */
+
+.author-page-main {
+  width: min(100% - 40px, 1080px);
+  max-width: 1080px;
+  margin: 36px auto 64px;
+  padding: 32px 40px 56px;
+  box-sizing: border-box;
+  background: #faf8f3;
+  border: 1px solid #deded3;
+  border-radius: 8px;
+  box-shadow: 0 8px 30px rgba(50, 55, 43, 0.05);
+}
+
+/* 作者简介区域 */
+.author-page-profile {
+  box-sizing: border-box;
+  padding: 28px 12px 36px;
+  border-bottom: 1px solid #deded3;
+}
+
+/* 作者名字和简介不要贴边 */
+.author-page-profile h1 {
+  overflow-wrap: anywhere;
+}
+
+.author-page-bio {
+  max-width: 620px;
+  line-height: 2.1;
+}
+
+/* 作品标题区域 */
+.author-page-works-heading {
+  padding: 36px 12px 24px;
+}
+
+/* 作品网格与边框之间保留空间 */
+.author-page-work-grid {
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+
+/* 每张作品卡片独立成块 */
+.author-page-work-card {
+  overflow: hidden;
+  border: 1px solid #e2e0d7;
+  border-radius: 6px;
+  background: #fffdf9;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.author-page-work-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(50, 55, 43, 0.08);
+}
+
+.author-page-work-info {
+  padding: 16px;
+}
+
+/* 手机屏幕适配 */
+@media (max-width: 760px) {
+  .author-page-main {
+    width: calc(100% - 24px);
+    margin: 16px auto 36px;
+    padding: 22px 14px 36px;
+    border-radius: 6px;
+  }
+
+  .author-page-profile {
+    padding: 20px 4px 28px;
+  }
+
+  .author-page-works-heading {
+    padding: 28px 4px 20px;
+  }
+
+  .author-page-work-grid {
+    padding: 0 4px;
+  }
+
+  .author-page-work-info {
+    padding: 12px;
+  }
+}
