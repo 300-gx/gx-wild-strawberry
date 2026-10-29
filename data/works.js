@@ -33,9 +33,8 @@ window.GX_WORKS = [
     likes: 46,
     description: "森林没有给出答案。树根向下延伸，雨水不断上涨，而他决定不再逃跑。"
   },
-  {
    
-{
+ {
   workId: "work_school_001",
   title: "放学以后",
   author: "盐汽水",
