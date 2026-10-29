@@ -477,7 +477,8 @@
   .modal-art.has-real-image::before {
     backdrop-filter: blur(6px) saturate(110%);
     -webkit-backdrop-filter: blur(6px) saturate(110%);
-   
+  }
+
   .modal-art.has-real-image .art-image-main-wrap {
     padding: 12px;
   }
