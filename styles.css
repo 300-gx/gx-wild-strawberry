@@ -1029,3 +1029,91 @@
     padding: 12px;
   }
 }
+
+/* 随机评论 / 碎碎念：编辑部式轻量切换栏 */
+.note-mode-switch {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0;
+  margin: 12px 0 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.note-mode-button {
+  position: relative;
+  appearance: none;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--muted);
+  padding: 9px 14px 11px;
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.note-mode-button:first-child {
+  padding-left: 0;
+}
+
+.note-mode-button:hover {
+  color: var(--green);
+}
+
+.note-mode-button.active {
+  color: var(--green-dark);
+  font-weight: 600;
+}
+
+.note-mode-button.active::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: -1px;
+  height: 2px;
+  background: var(--coral);
+}
+
+.note-mode-button:first-child.active::after {
+  left: 0;
+}
+
+.note-mode-button:focus-visible {
+  outline: 1px solid var(--green);
+  outline-offset: 2px;
+}
+
+.cool-mode .note-mode-button.active {
+  color: var(--green-dark);
+}
+
+@media (max-width: 480px) {
+  .note-mode-switch {
+    margin-top: 10px;
+    margin-bottom: 16px;
+  }
+
+  .note-mode-button {
+    padding: 8px 10px 10px;
+    font-size: 11px;
+  }
+
+  .note-mode-button:first-child {
+    padding-left: 0;
+  }
+
+  .note-mode-button.active::after {
+    left: 10px;
+    right: 10px;
+  }
+
+  .note-mode-button:first-child.active::after {
+    left: 0;
+  }
+}
